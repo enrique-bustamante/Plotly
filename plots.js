@@ -79,12 +79,12 @@ function buildCharts(sample){
         var sampleArray = samples.filter(sampleObj => sampleObj.id == sample);
         var result = sampleArray[0];
         // Gague labels, I put them in the wrong order so calling reverse method to flip em
-        gagueValues = ['8-9', '7-8', '6-7', '5-4', '4-5', '3-4', '2-3', '1-2', '0-1', '']
+        gagueValues = ['8-9', '7-8', '6-7', '5-6', '4-5', '3-4', '2-3', '1-2', '0-1', '']
         // How much hand washing result data, since we're using half a pie chart
         // need to multiply by 20 to equal 180
         var level = result.wfreq * 20;
         // Trig to calc meter point
-        var degrees = (190 - level), //190 is 180 plus a 10 degree correction for needle
+        var degrees = (180 - level), //190 is 180 plus a 10 degree correction for needle
             radius = .5;
         var radians = degrees * Math.PI / 180;
         var x = radius * Math.cos(radians);
@@ -111,7 +111,7 @@ function buildCharts(sample){
                 text: level
             },
             {   // create the divisions within the gauge
-                values: [50/9, 50/9, 50/9, 50/9, 50/9, 50/9, 50/9, 50/9, 50/9, 50 ],
+                values: [1, 1, 1, 1, 1, 1, 1, 1, 1, 9 ],
                 rotation: 90,
                 text: gagueValues,
                 textinfo: 'text',
