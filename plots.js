@@ -78,8 +78,8 @@ function buildCharts(sample){
         var samples = data.metadata;
         var sampleArray = samples.filter(sampleObj => sampleObj.id == sample);
         var result = sampleArray[0];
-        // Gague labels, I put them in the wrong order so calling reverse method to flip em
-        gagueValues = ['8-9', '7-8', '6-7', '5-6', '4-5', '3-4', '2-3', '1-2', '0-1', '']
+        // Gauge labels
+        gaugeValues = ['8-9', '7-8', '6-7', '5-6', '4-5', '3-4', '2-3', '1-2', '0-1', '']
         // How much hand washing result data, since we're using half a pie chart
         // need to multiply by 20 to equal 180
         var level = result.wfreq * 20;
@@ -113,7 +113,7 @@ function buildCharts(sample){
             {   // create the divisions within the gauge
                 values: [1, 1, 1, 1, 1, 1, 1, 1, 1, 9 ],
                 rotation: 90,
-                text: gagueValues,
+                text: gaugeValues,
                 textinfo: 'text',
                 textposition: 'inside',
                 marker: {
