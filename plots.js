@@ -73,47 +73,112 @@ function buildCharts(sample){
   });
 
   // Build gauge chart
-d3.json("samples.json").then((data) => {
-  var metadata = data.metadata;
-  var resultArray = metadata.filter(sampleObj => sampleObj.id == sample);
-  var result = resultArray[0];
-  var trace2 = [
-    {
-    domain: { x: [0, 1], y: [0, 1] },
-    value: result.wfreq,
-    title: { text: "Belly Button Washing Frequency" },
-    type: "indicator",
-    mode: "gauge+number",
-    gauge: {
-      axis: { range: [0, 9] },
-      bar: {color:"red"},
-      steps: [
-        { range: [0, 1], color: "white" },
-        { range: [1, 2], color: "LightGray" },
-        { range: [2, 3], color: "GreenYellow" },
-        { range: [3, 4], color: "LightGreen" },
-        { range: [4, 5], color: "YellowGreen" },
-        { range: [5, 6], color: "MediumSeaGreen" },
-        { range: [6, 7], color: "ForestGreen" },
-        { range: [7, 8], color: "Green" },
-        { range: [8, 9], color: "DarkGreen" },
-      ]
-    }
-    
-  
-  }
-  ];
-  
- 
-var layout = {
-    width: 600, 
-    height: 500, 
-    margin: { t: 0, b: 0 } 
-  };
-  Plotly.newPlot('gauge', trace2, layout);
-});
-  
+    d3.json("samples.json").then((data) => {
+        // Extract sample data
+        var samples = data.metadata;
+        var sampleArray = samples.filter(sampleObj => sampleObj.id == sample);
+        var result = sampleArray[0];
+        // Gague labels, I put them in the wrong order so calling reverse method to flip em
+        gagueValues = ['8-9', '7-8', '6-7', '5-4', '4-5', '3-4', '2-3', '1-2', '0-1', '']
+        // How much hand washing result data, since we're using half a pie chart
+        // need to multiply by 20 to equal 180
+        var level = result.wfreq * 20;
+        // Trig to calc meter point
+        var degrees = (190 - level), //190 is 180 plus a 10 degree correction for needle
+            radius = .5;
+        var radians = degrees * Math.PI / 180;
+        var x = radius * Math.cos(radians);
+        var y = radius * Math.sin(radians);
+        var path1 = (degrees < 45 || degrees > 135) ? 'M -0.0 -0.025 L 0.0 0.025 L ' : 'M -0.025 -0.0 L 0.025 0.0 L ';
+        // Path: may have to change to create a better triangle
+        var mainPath = path1,
+            pathX = String(x),
+            space = ' ',
+            pathY = String(y),
+            pathEnd = ' Z';
+        var path = mainPath.concat(pathX, space, pathY, pathEnd);
+        // Creates base for the needle
+        var data = [{
+                type: 'scatter',
+                x: [0],
+                y: [0],
+                marker: {
+                    size: 14,
+                    color: '850000'
+                },
+                showlegend: false,
+                name: 'wfreq',
+                text: level
+            },
+            {   // create the divisions within the gauge
+                values: [50/9, 50/9, 50/9, 50/9, 50/9, 50/9, 50/9, 50/9, 50/9, 50 ],
+                rotation: 90,
+                text: gagueValues,
+                textinfo: 'text',
+                textposition: 'inside',
+                marker: {
+                    colors: [
+                        "rgba(10, 127, 45, 0.5)",
+                        "rgba(30, 127, 0, .5)",
+                        "rgba(70, 127, 5, .5)",
+                        "rgba(80, 127, 10, .5)",
+                        "rgba(120, 154, 22, .5)",
+                        "rgba(170, 202, 42, .5)",
+                        "rgba(202, 209, 95, .5)",
+                        "rgba(225, 200, 100, .5)",
+                        "rgba(232, 226, 202, .5)",
+                        "white"
+                    ]
+                },
+                hoverinfo: 'text',
+                hole: .5,
+                type: 'pie',
+                showlegend: false,
+                title: {
+                    text: "<b>Belly Button Washing Frequency</b><br>Scrubs per Week",
+                    position: 'top center'
+                }
+            }
+        ];
+        var layout = {
+            shapes: [{
+                type: 'path',
+                path: path,
+                fillcolor: '850000',
+                line: {
+                    color: '850000'
+                }
+            }],
+            height: 500,
+            width: 500,
+            xaxis: {
+                zeroline: false,
+                showticklabels: false,
+                showgrid: false,
+                range: [-1, 1]
+            },
+            yaxis: {
+                zeroline: false,
+                showticklabels: false,
+                showgrid: false,
+                range: [-1, 1]
+            },
+            autosize: true,
+            margin: {
+                l: 20,
+                r: 100,
+                b: 0,
+                t: 0,
+                pad: 4
+            }
+        };
+        // Render the plot to the div tag with id "gauge"
+        Plotly.newPlot("gauge", data, layout, {
+            displayModeBar: false
+        });
+    })
 }
+
 
 function optionChanged(newSample) {
   buildMetadata(newSample);
